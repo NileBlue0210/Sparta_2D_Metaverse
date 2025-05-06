@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/FlappingMiniGameScene.unity
+    guid: df3b2c71c6b287d4daa72187f3b05c1c
   m_configObjects: {}
