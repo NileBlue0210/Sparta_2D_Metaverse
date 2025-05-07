@@ -17,7 +17,6 @@ public class PlaneController : MonoBehaviour
 
     private MiniGameManager gameManager;
 
-    // Start is called before the first frame update
     void Start()
     {
         gameManager = FindObjectOfType<MiniGameManager>();
@@ -31,7 +30,6 @@ public class PlaneController : MonoBehaviour
             Debug.LogError("not founded plane rigidbody");
     }
 
-    // Update is called once per frame
     void Update()
     {
         // 미니게임이 진행중이 아닐 때, 스페이스 또는 왼클릭으로 미니게임을 시작하고, 백스페이스 또는 우클릭으로 미니게임을 종료한다
@@ -78,7 +76,7 @@ public class PlaneController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead) return;
+        if (isDead || !gameManager.IsMiniGamePlay) return;
 
         Vector3 velocity = _rigidbody.velocity;
 

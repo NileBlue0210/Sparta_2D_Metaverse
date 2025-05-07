@@ -39,8 +39,6 @@ public class MiniGameManager : MonoBehaviour
         if (!gameManager.IsMiniGameActive)
             return;
 
-        // player.gameObject.SetActive(false); // 미니게임 씬 로드 후, 게임이 시작되기 전까지 플레이어 오브젝트 비활성화
-
         uiManager.SetStart();
     }
 
@@ -63,8 +61,10 @@ public class MiniGameManager : MonoBehaviour
             bestScore = currentScore;
 
             PlayerPrefs.SetInt("MiniGameBestScore", bestScore);
-            PlayerPrefs.Save();
         }
+
+        PlayerPrefs.SetInt("MiniGameCurrentScore", currentScore);
+        PlayerPrefs.Save();
 
         uiManager.SetRestart();
     }
@@ -82,9 +82,6 @@ public class MiniGameManager : MonoBehaviour
     public void PlayMiniGame()
     {
         isMiniGamePlay = true;
-
-        if (!player.gameObject.activeSelf)  // 초기 실행 시, 플레이어 오브젝트가 비활성화 되어있을 경우 플레이어 오브젝트를 활성화
-            player.gameObject.SetActive(true);
 
         if (uiManager.guidePanel.gameObject.activeSelf)
             uiManager.guidePanel.SetActive(false); // 안내 메세지 비활성화

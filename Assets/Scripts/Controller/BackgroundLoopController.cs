@@ -24,8 +24,6 @@ public class BackgroundLoopController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Triggered: " + collision.name);
-
         ObstacleController obstacle = collision.GetComponent<ObstacleController>();
 
         if (obstacle)
