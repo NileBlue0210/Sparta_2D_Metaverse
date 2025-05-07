@@ -9,12 +9,16 @@ public class GameManager : MonoBehaviour
     private static GameManager gameManager;
     public static GameManager Instance { get { return gameManager; } }
 
-    private bool isMiniGameActive = false;
-    public bool IsMiniGameActive { get { return isMiniGameActive; } }
+    private UIManager uiManager;
 
     public MiniGameButtonController miniGameButton { get; private set; }
     public MiniGameManager miniGameManager { get; private set; }
     public PlayerController player { get; private set; }
+
+    private bool isMiniGameActive = false;
+    public bool IsMiniGameActive { get { return isMiniGameActive; } }
+
+    private bool _showResultOnLoad = false; // 씬 로드시에 결과 패널 표시 플래그
 
     private void Awake()
     {
@@ -31,6 +35,7 @@ public class GameManager : MonoBehaviour
 
         player = FindObjectOfType<PlayerController>();
         miniGameButton = FindObjectOfType<MiniGameButtonController>();
+        uiManager = FindObjectOfType<UIManager>();
     }
 
     public void ShowMiniGame()
@@ -50,10 +55,11 @@ public class GameManager : MonoBehaviour
         if (!isMiniGameActive)
             return;
 
+        _showResultOnLoad = true;
+
         SceneManager.LoadScene("MainScene");
 
         isMiniGameActive = false;
-        // player.gameObject.SetActive(true); // 미니게임 종료 후, 비활성화 되어있던 플레이어 오브젝트 다시 활성화
     }
 
     private void OnEnable()
@@ -83,11 +89,16 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (scene.name == "MainScene")
+        if (scene.name == "MainScene" && _showResultOnLoad) // 미니게임 종료 후, 메인 씬 로딩
         {
             player = FindObjectOfType<PlayerController>();
+            uiManager = FindObjectOfType<UIManager>();
             miniGameButton = FindObjectOfType<MiniGameButtonController>();
+
             player.gameObject.SetActive(true);
+            uiManager.ShowResultPanel(); // 미니게임 종료 후, 결과 패널을 보여준다
+
+            _showResultOnLoad = false; // 결과 표시 후, 플래그 초기화
         }
     }
 }
