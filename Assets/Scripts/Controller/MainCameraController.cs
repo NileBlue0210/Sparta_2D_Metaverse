@@ -27,7 +27,11 @@ public class MainCameraController : MonoBehaviour
         Vector3 pos = transform.position;
 
         pos.x = target.position.x + offsetX;
-        pos.y = target.position.y + offsetY;
+
+        if (!GameManager.Instance.IsMiniGameActive) // 미니게임 중에는 카메라 y축 이동을 제한한다
+        {
+            pos.y = target.position.y + offsetY;
+        }
 
         transform.position = pos;
     }
