@@ -12,9 +12,12 @@ public class BaseController : MonoBehaviour
 
     public Vector2 MovementDirection { get { return movementDirection; } }
 
+    protected AnimationHandler animationHandler;
+
     protected virtual void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        animationHandler = GetComponent<AnimationHandler>();
     }
 
     protected virtual void Start()
@@ -44,6 +47,7 @@ public class BaseController : MonoBehaviour
         direction *= 5;
 
         _rigidbody.velocity = direction;
+        animationHandler.Move(direction);
     }
 
     // 캐릭터 회전: 이동 방향에 따라 flip을 통해 Sprite 회전
