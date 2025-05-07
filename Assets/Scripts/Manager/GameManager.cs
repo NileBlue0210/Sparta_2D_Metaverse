@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// to do: 미니게임을 관리하는 매니저를 따로 만드는 것이 맞는 것 같다
 public class GameManager : MonoBehaviour
 {
     private static GameManager gameManager;
     public static GameManager Instance { get { return gameManager; } }
 
-    private MiniGameUIManager miniGameUIManager;
-
     private bool isMiniGameActive = false;
     public bool IsMiniGameActive { get { return isMiniGameActive; } }
 
     public MiniGameButtonController miniGameButton { get; private set; }
+    public MiniGameManager miniGameManager { get; private set; }
     public PlayerController player { get; private set; }
 
     private void Awake()
@@ -30,19 +30,14 @@ public class GameManager : MonoBehaviour
         }
 
         player = FindObjectOfType<PlayerController>();
-        miniGameUIManager = FindObjectOfType<MiniGameUIManager>();  // 다른 씬에 있는 컴포넌튼데 찾을 수 있나?
+        miniGameButton = FindObjectOfType<MiniGameButtonController>();
     }
 
-    public void StartMiniGame()
+    public void ShowMiniGame()
     {
         if (isMiniGameActive)
             return;
 
-        ShowMiniGame();
-    }
-
-    private void ShowMiniGame()
-    {
         isMiniGameActive = true;
         player.gameObject.SetActive(false); // 미니게임 중, 플레이어 오브젝트가 동작하는 것을 막기 위해 비활성화
 
@@ -50,44 +45,49 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("FlappingMiniGameScene");
     }
 
-    public void EndMiniGame()
+    public void HideMiniGame()
     {
         if (!isMiniGameActive)
             return;
 
-        HideMiniGame();
-    }
-
-    private void HideMiniGame()
-    {
-        SceneManager.UnloadSceneAsync("FlipingMiniGameScene");
+        SceneManager.LoadScene("MainScene");
 
         isMiniGameActive = false;
-        player.gameObject.SetActive(true); // 미니게임 종료 후, 비활성화 되어있던 플레이어 오브젝트 다시 활성화
-        miniGameButton.IsClicked = false;
+        // player.gameObject.SetActive(true); // 미니게임 종료 후, 비활성화 되어있던 플레이어 오브젝트 다시 활성화
     }
 
-    public void MiniGameOver()
+    private void OnEnable()
     {
-        if (!isMiniGameActive)
-            return;
-
-        miniGameUIManager.SetRestart();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void MiniGameRestart()
+    private void OnDisable()
     {
-        if (!isMiniGameActive)
-            return;
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    public void MiniGameEnd()
+    // 미니게임 씬 로드 시, 미니게임의 매니저를 탐색 후 미니게임 시작 함수를 호출한다
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (!isMiniGameActive)
-            return;
+        if (scene.name == "FlappingMiniGameScene")
+        {
+            miniGameManager = FindObjectOfType<MiniGameManager>();
 
-        HideMiniGame();
+            if (miniGameManager != null)
+            {
+                miniGameManager.MiniGameStart();
+            }
+            else
+            {
+                Debug.LogWarning("Can not find MiniGameManager.");
+            }
+        }
+
+        if (scene.name == "MainScene")
+        {
+            player = FindObjectOfType<PlayerController>();
+            miniGameButton = FindObjectOfType<MiniGameButtonController>();
+            player.gameObject.SetActive(true);
+        }
     }
 }

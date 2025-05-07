@@ -5,24 +5,16 @@ using UnityEngine;
 
 public class MiniGameButtonController : MonoBehaviour
 {
-    Animator animator;
+    private Animator animator;
 
     private bool isClicked = false;
     private bool isPlayerClose = false;
 
-    public bool IsClicked
-    {
-        get { return isClicked; }
-        set { 
-            isClicked = value;
-
-            animator.SetBool("IsClicked", isClicked);
-        }
-    }
+    public bool IsClicked { get { return isClicked; } }
 
     private void Start()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -38,9 +30,11 @@ public class MiniGameButtonController : MonoBehaviour
 
     public void OnClick()
     {
-        IsClicked = true;
+        isClicked = true;
 
-        GameManager.Instance.StartMiniGame();
+        animator.SetTrigger("IsClicked");
+
+        GameManager.Instance.ShowMiniGame();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

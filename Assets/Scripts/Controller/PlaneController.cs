@@ -15,12 +15,12 @@ public class PlaneController : MonoBehaviour
     private float deathCooldown = 0f;
     private bool isFlap = false;
 
-    GameManager gameManager = null;
+    private MiniGameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameManager.Instance; // MainScene의 GameManager를 가져온다
+        gameManager = FindObjectOfType<MiniGameManager>();
         animator = GetComponentInChildren<Animator>();  // 자식 오브젝트 Model에 있는 애니메이터를 가져온다
         _rigidbody = GetComponent<Rigidbody2D>();
 
@@ -34,6 +34,25 @@ public class PlaneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // 미니게임이 진행중이 아닐 때, 스페이스 또는 왼클릭으로 미니게임을 시작하고, 백스페이스 또는 우클릭으로 미니게임을 종료한다
+        if (!gameManager.IsMiniGamePlay)
+        {
+            _rigidbody.gravityScale = 0f;
+
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            {
+                gameManager.PlayMiniGame();
+            }
+            else if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetMouseButtonDown(1))
+            {
+                gameManager.MiniGameEnd();
+            }
+
+            return;
+        }
+
+        _rigidbody.gravityScale = 1f;
+
         if (isDead)
         {
             if (deathCooldown <= 0)
@@ -71,10 +90,10 @@ public class PlaneController : MonoBehaviour
             isFlap = false;
         }
 
-        _rigidbody.velocity = velocity; // 위의 Vector3 velocity에서 _rigidbody.velocity를 할당한 것은 값의 복제이며, 실제로 rigidbody에 할당한 것이 아니기 때문에 변화한 에너지 값을 적용시켜 주기 위함
+        _rigidbody.velocity = velocity;
 
-        float angle = Mathf.Clamp((_rigidbody.velocity.y * 10f), -90, 90);  // 각도 제한, rigidbody의 y축 속도를 감지함으로 y축 속도가 올라가면 각도가 90도까지 올라가고 내려가면 -90도까지 내려감
-        transform.rotation = Quaternion.Euler(0, 0, angle); // Quaternion.Euler는 각도를 설정하는 메소드, z축 회전은 angle로 설정하고 x축과 z축은 0으로 설정함
+        float angle = Mathf.Clamp((_rigidbody.velocity.y * 10f), -90, 90);
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
